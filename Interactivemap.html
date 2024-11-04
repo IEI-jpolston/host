@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Entity Locations Map - OpenStreetMap</title>
+  <link rel="stylesheet" href="https://islandentinc.sharepoint.com/sites/IslandWiki/SiteAssets/leaflet.css?csf=1&web=1&e=SLUPkU&CID=94b8f458-810a-4e2d-88b4-c38df07edbab" onerror="handleLoadError('Leaflet CSS')" />
+  <script src="https://islandentinc.sharepoint.com/sites/IslandWiki/SiteAssets/leaflet.js?CID=0b461eec-e89e-4091-9a89-31f1c1ee4116" onerror="handleLoadError('Leaflet JS')"></script>
+  <style>
+    #map {
+      height: 600px;
+      width: 100%;
+    }
+    #error {
+      color: red;
+      display: none;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <p id="error">Error: The map failed to load. Please check if JavaScript is enabled and the required libraries are accessible.</p>
+
+  <script>
+    // Function to handle loading errors for external resources
+    function handleLoadError(resourceName) {
+      var errorMessage = 'Error: Failed to load ' + resourceName + '. Please ensure the resource is available and the path is correct.';
+      document.getElementById('error').style.display = 'block';
+      document.getElementById('error').innerText += '\n' + errorMessage;
+      console.error(errorMessage);
+    }
+
+    try {
+      // Check if Leaflet is loaded
+      if (typeof L === 'undefined') {
+        throw new Error('Leaflet library is not loaded. Please check the script path or network connection.');
+      }
+
+      // Initialize the map
+      var map = L.map('map').setView([47.2134, -123.1000], 10); // Centered around Shelton, WA
+
+      // Load and display tile layer from OpenStreetMap
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      // Array of locations with latitude, longitude, title, and address
+      var locations = [
+        {lat: 47.2023, lng: -123.0925, title: 'Ta Qwo Ma Business Center', address: '21 SE Simmons Rd, Shelton, WA 98584'},
+        {lat: 47.2017, lng: -123.0701, title: 'KTP Express', address: '3850 SE Old Olympic Hwy, Shelton, WA 98584'},
+        {lat: 47.2028, lng: -123.0815, title: 'IEI Corp Offices', address: '3591 SE Old Olympic Hwy, Shelton, WA 98584'},
+        {lat: 47.1556, lng: -123.0886, title: 'Kamilche Trading Post (KTP)', address: '61 WA-108, Shelton, WA 98584'},
+        {lat: 47.1523, lng: -123.0895, title: 'Elevation Dispensary', address: 'W 90 WA-108, Shelton, WA 98584'},
+        {lat: 47.1548, lng: -123.0800, title: 'Skookum Creek Tobacco Company', address: '1041 WA-108, Shelton, WA 98584'},
+        {lat: 47.1303, lng: -123.0680, title: 'Clam Fresh', address: '1181 Dahman Rd SE, Shelton, WA 98584'},
+        {lat: 47.1778, lng: -123.0217, title: 'Salish Seafood', address: '92 E Chapman Rd, Shelton, WA 98584'},
+        {lat: 46.9894, lng: -122.9012, title: 'Elevation (Tumwater) / Drive Thru Smoke Shop', address: '7249 Old Hwy 99 SE, Tumwater, WA, 98501'},
+        {lat: 47.0986, lng: -123.0083, title: 'Steamboat Trading Post (STP)', address: '6610 Sexton Dr NW, Olympia, WA 98502'},
+        {lat: 47.1392, lng: -123.0700, title: 'Native Sun Grown Farm', address: '791 Klah Che Min Dr, Shelton, WA 98584'},
+        {lat: 46.9811, lng: -122.9333, title: 'Littlerock Trading Post (upcoming 2025)', address: '7000 Littlerock Rd, Tumwater, WA 98589'}
+      ];
+
+      // Loop through locations and add markers to the map
+      locations.forEach(function(location) {
+        try {
+          var marker = L.marker([location.lat, location.lng]).addTo(map);
+          marker.bindPopup("<b>" + location.title + "</b><br>" + location.address);
+        } catch (markerError) {
+          console.error('Error adding marker for location:', location, markerError);
+          document.getElementById('error').style.display = 'block';
+          document.getElementById('error').innerText += '\nError adding marker for: ' + location.title;
+        }
+      });
+
+    } catch (mainError) {
+      document.getElementById('error').style.display = 'block';
+      document.getElementById('error').innerText = 'Error: ' + mainError.message;
+      console.error('Error during map initialization:', mainError);
+    }
+  </script>
+</body>
+</html>
